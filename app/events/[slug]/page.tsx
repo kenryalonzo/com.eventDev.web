@@ -6,7 +6,7 @@ const EventDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
-  const slug = params.then((p) => p.slug);
+  const { slug } = await params;
 
   return (
     <main>

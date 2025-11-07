@@ -4,6 +4,7 @@ import Event from "./event.model";
 // TypeScript interface for Booking document
 export interface IBooking extends Document {
   eventId: Types.ObjectId;
+  slug: string;
   email: string;
   createdAt: Date;
   updatedAt: Date;
@@ -16,6 +17,12 @@ const BookingSchema = new Schema<IBooking>(
       ref: "Event",
       required: [true, "Event ID is required"],
       index: true, // Index for faster queries
+    },
+    slug: {
+      type: String,
+      required: [true, "Event slug is required"],
+      trim: true,
+      lowercase: true,
     },
     email: {
       type: String,
@@ -53,7 +60,9 @@ BookingSchema.pre("save", async function (next) {
     } catch (error) {
       return next(
         new Error(
-          `Error verifying event: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Error verifying event: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
         )
       );
     }
