@@ -14,7 +14,7 @@ const Page = async () => {
     events = [];
   } else {
     try {
-      const response = await fetch(`${BASE_URL}/api/events`);
+  const response = await fetch(`${BASE_URL}/api/events`, { next: { revalidate: 60 } });
       const { events: fetchedEvents } = await response.json();
       events = fetchedEvents || [];
     } catch (error) {
