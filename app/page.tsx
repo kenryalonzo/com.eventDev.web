@@ -5,8 +5,9 @@ import { IEvent } from "@/database";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // client-side
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // Vercel
-  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL; // fallback
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`; // Vercel (toujours défini sur Vercel)
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // fallback Vercel
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL; // fallback local/dev
   return "http://localhost:3000"; // local dev
 };
 
