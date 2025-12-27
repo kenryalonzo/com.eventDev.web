@@ -5,7 +5,6 @@ import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import Image from "next/image";
 import BookEvent from "@/components/BookEvent";
 import EventCard from "@/components/EventCard";
-import { cacheLife } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -46,9 +45,15 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 );
 
 const EventDetails = async ({ params }: { params: string }) => {
-  "use cache";
-  cacheLife("hours");
   const slug = params;
+
+  // Pendant le build, retourner notFound pour éviter les erreurs d'API
+  if (
+    process.env.NODE_ENV === "production" &&
+    !process.env.NEXT_PUBLIC_VERCEL_ENV
+  ) {
+    return notFound();
+  }
 
   let event;
   try {
@@ -92,9 +97,14 @@ const EventDetails = async ({ params }: { params: string }) => {
 
   const bookings = 10;
 
-  const similarEvents: IEvent[] = (await getSimilarEventsBySlug(
-    slug
-  )) as unknown as IEvent[];
+  // Ne pas appeler getSimilarEventsBySlug pendant le build
+  let similarEvents: IEvent[] = [];
+  if (
+    process.env.NODE_ENV !== "production" ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV
+  ) {
+    similarEvents = (await getSimilarEventsBySlug(slug)) as unknown as IEvent[];
+  }
 
   return (
     <section id="event">

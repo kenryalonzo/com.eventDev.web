@@ -1,15 +1,27 @@
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database";
-import { cacheLife } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Page = async () => {
-  "use cache";
-  cacheLife("hours");
-  const response = await fetch(`${BASE_URL}/api/events`);
-  const { events } = await response.json();
+  // Pendant le build, retourner des données mockées pour éviter les erreurs
+  let events: IEvent[] = [];
+  if (
+    process.env.NODE_ENV === "production" &&
+    !process.env.NEXT_PUBLIC_VERCEL_ENV
+  ) {
+    events = [];
+  } else {
+    try {
+      const response = await fetch(`${BASE_URL}/api/events`);
+      const { events: fetchedEvents } = await response.json();
+      events = fetchedEvents || [];
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      events = [];
+    }
+  }
 
   return (
     <section>
