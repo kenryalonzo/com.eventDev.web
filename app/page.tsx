@@ -1,8 +1,14 @@
+
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") return ""; // client-side
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // Vercel
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL; // fallback
+  return "http://localhost:3000"; // local dev
+};
 
 const Page = async () => {
   // Pendant le build, retourner des données mockées pour éviter les erreurs
@@ -14,7 +20,7 @@ const Page = async () => {
     events = [];
   } else {
     try {
-  const response = await fetch(`${BASE_URL}/api/events`, { next: { revalidate: 60 } });
+  const response = await fetch(`${getBaseUrl()}/api/events`, { next: { revalidate: 60 } });
       const { events: fetchedEvents } = await response.json();
       events = fetchedEvents || [];
     } catch (error) {
